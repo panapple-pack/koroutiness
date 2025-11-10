@@ -48,7 +48,7 @@ class SaveFileManager {
             false
         }
     }
-    fun deleteFileSavely(filename: String): Boolean {
+    fun deleteFileSafely(filename: String): Boolean {
         return try {
             val file = File(filename)
             if (!file.exists()) {
