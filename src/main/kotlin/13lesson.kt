@@ -117,7 +117,7 @@ class CombatSystem(logger: GameLogger): GameSystem("CombatSystem", logger) {
     }
 }
 
-class InventorySystem(logger: GameLogger): GameSystem("InventotySystem", logger) {
+class InventorySystem(logger: GameLogger): GameSystem("InventorySystem", logger) {
     private val items = mutableListOf<String>()
     private var isInitialized = false
 
@@ -163,6 +163,10 @@ class InventorySystem(logger: GameLogger): GameSystem("InventotySystem", logger)
     }
 
     override fun emergencyShutDown() {
+        if (!isInitialized) {
+            logger.warn("Аварийное отключение системы инвентаря")
+            return
+        }
         // Логирование warn экстренного отключения системы инвентаря
         // Сохранение состояния инвентаря перед отключением
         // Создание бэкап-списка (использовать метод joinToString("\n"))
