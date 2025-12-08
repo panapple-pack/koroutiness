@@ -1,6 +1,7 @@
+package old_money
+
 import java.io.File
 import java.io.IOException
-import java.security.Security
 
 // Класс для безопасной работы с файлами
 class SaveFileManager {

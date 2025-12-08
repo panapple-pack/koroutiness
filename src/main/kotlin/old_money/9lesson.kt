@@ -1,4 +1,4 @@
-//import java.rmi.registry.Registry
+package old_money//import java.rmi.registry.Registry
 //import kotlin.random.Random
 //
 //// Улучшенный класс Item с разными типами предметов

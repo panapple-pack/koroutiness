@@ -1,6 +1,6 @@
+package old_money
+
 import kotlinx.coroutines.*
-import kotlin.random.Random
-import kotlin.system.measureTimeMillis
 
 class GameCharacter(val name: String) {
     var health = 100

@@ -1,4 +1,4 @@
-//import java.net.http.WebSocket
+package old_money//import java.net.http.WebSocket
 //import java.security.Principal
 //import kotlin.random.Random
 //
@@ -406,7 +406,7 @@
 //}
 //
 //
-//fun main(){
+//fun old_money.main(){
 //    println("=== СИСТЕМА КВЕСТОВ И NPC ===")
 //    val player = Player("Олег", 100, 15)
 //

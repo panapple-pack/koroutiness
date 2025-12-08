@@ -1,5 +1,4 @@
-import java.io.File
-import kotlin.random.Random
+package old_money
 
 class SaveCharacter(val name: String, var health: Int) {
 
