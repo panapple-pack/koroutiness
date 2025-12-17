@@ -66,7 +66,7 @@ class Inventory {
         if (removed) {
             println("Предмет ${item.name} удален")
         } else {
-            println("не удалось удалить премет: ${item.name}")
+            println("не удалось удалить предмет: ${item.name}")
         }
         return removed  // false или true
     }
