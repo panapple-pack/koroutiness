@@ -3,12 +3,14 @@ package lesson9
 // Корутина - это выделенный поток, в котором и будет выполняться второстепенная/фоновая/дополнительная к основной части игры - процесс
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.time.delay
 
 class GameCharacter(
     val name: String,
     val maxHealth: Int,
     val maxMana: Int,
-    val baseAttack: Int
+    val baseAttack: Int,
+    val bonusAttack: Int
 ) {
     var currentHealth: Int = maxHealth
     // Изменяемое здоровье, на которое будет накладываться модификатор (по умолчанию максимальное)
@@ -23,8 +25,18 @@ class GameCharacter(
     //? - Доступность null в данной ссылке обязательна, т.к. ссылка по умолчанию может вовсе не ссылаться на корутины
 
     private var potionJob: Job? = null
+
+    private var attackBonusJob: Job? = null
     // null - значит при создании ссылки она пока пустая
     // Корутина, которая будет обрабатывать получение урона от яда, и время сколько еще яд будет действовать
+
+    fun isAlive(): Boolean {
+        if (currentHealth <= 0) {
+            currentHealth = 0
+            return false
+        }
+        return true
+    }
 
     fun printStatus() {
         println("=== Статус сущности $name ===")
@@ -42,6 +54,13 @@ class GameCharacter(
 
         if (currentHealth <= 0) {
             println("[!] $name уже дед")
+            return
+        }
+
+        if (attackBonusJob != null) {
+            val damage = baseAttack + bonusAttack
+            target.takeDamage(damage)
+            println("$name атакует ${target.name} с дополнительным уроном и наносит $damage урона")
             return
         }
 
@@ -95,6 +114,10 @@ class GameCharacter(
         intervalMillis: Long  // интервал между тем, как часто будет регенерироваться (вызываться 1 тик)
     ) {
         // Проверка, если мана уже регенерирует - перезапустить корутину
+        if (!isAlive()) {
+            println("$name умер и не может фармить ману")
+            return
+        }
         if (manaRegenJob != null) {
             println("[$] мана уже регенерирует, перезапускаем.......")
             manaRegenJob?.cancel()
@@ -131,29 +154,79 @@ class GameCharacter(
     }
 
     fun stopRegenerationMana() {
-        if (manaRegenJob != null) {
-            manaRegenJob?.cancel()
-            println("Корутина регенерации маны закончила работу")
+        if (manaRegenJob == null) {
+            println("[!] Регенерация не начиналась, чтобы ее останавливать")
+            return
         }
+        manaRegenJob?.cancel()
+        println("Регенерация маны завершена")
+        manaRegenJob = null
     }
 
-    fun takeDamageByPoison(amountPerTick: Int, damagePerTick: Int, intervalMillis: Long) {
+    fun takeDamageByPoison(ticks: Int, damagePerTick: Int, intervalMillis: Long) {
+        if (manaRegenJob != null) {
+            println("Яд уже действует на $name. Перезапускаем корутину")
+            potionJob?.cancel()
+        }
         potionJob = GlobalScope.launch {
-            while (true) {
+            println("$name отравлен, эффект действует $ticks тиков")
+
+            var remainingTicks = ticks
+            // Сколько осталось тиков до завершения действия яда
+            while (remainingTicks > 0) {
                 delay(intervalMillis)
 
                 if (currentHealth <= 0) {
                     currentHealth = 0
-                    println("$name умер")
+                    println("$name умер от отравления")
                     break
                 }
-                if (amountPerTick == 0) {
-                    println("Эффект яда пройден")
-                    break
-                }
-                currentHealth -= damagePerTick
+                println("Яд наносит $damagePerTick урона $name")
+                takeDamage(damagePerTick)
+                remainingTicks -= 1
+            }
+            println("[^] Эффект действия яда на $name закончился")
+        }
+    }
+
+    fun applyAttackBuff(bonus: Int, durationMillis: Long) {
+        if (!isAlive()) {
+            println("$name умер и не может использовать бонусные атаки")
+            return
+        }
+        GlobalScope.launch {
+            if (attackBonusJob != null) {
+                println("Вы уже бафнулись, подождите")
+                attackBonusJob?.cancel()
+            }
+            attackBonusJob = GlobalScope.launch {
+                println("Наложение бонусного урона: $bonus")
+                delay(durationMillis)
+
+                attackBonusJob?.cancel()
+                attackBonusJob = null
+                println("Баф силы на $name закончился")
             }
         }
+    }
+
+    fun clearPotion() {
+        if (potionJob == null) {
+            println("[!] Эффект яда на $name не наложен")
+            return
+        }
+        potionJob?.cancel()
+        println("Эффект яда на $name очищен")
+        potionJob = null
+    }
+
+    fun stopCoroutines() {
+        potionJob?.cancel()
+        potionJob = null
+        attackBonusJob?.cancel()
+        attackBonusJob = null
+        manaRegenJob?.cancel()
+        manaRegenJob = null
     }
 
     // Здесь после завершения корутины (или точнее выхода из launch{} - ссылка manaRegenJob станет null)
