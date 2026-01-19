@@ -2,13 +2,18 @@ package lesson11
 
 class QuestSystem {
     // Флаги
+    data class QuestProgressState(
+        var questStarted: Boolean = false,
+        var stepTalked: Boolean = false,
+        var stepKilled: Boolean = false,
+        var stepReportedBack: Boolean = false,
+        var questCompleted: Boolean = false
+    )
 
-    private var questStarted: Boolean = false
-    private var stepTalked: Boolean = false
-    private var stepKilled: Boolean = false
-    private var stepReportedBack = false
 
     private val questId = "ultra_mega_pro_quest_001"
+
+    private val progressByPlayer: MutableMap<String, QuestProgressState> = mutableMapOf()
 
     fun register() {
         EventBus.subscribe { event ->
@@ -46,7 +51,7 @@ class QuestSystem {
             // Отправляем в очередь событие выполненного квеста
             // После отмечаем флаг старта квеста как false
 
-            if (questStarted || stepTalked || stepKilled || stepReportedBack) {
+            if (questStarted && stepTalked && stepKilled && stepReportedBack) {
                 println("Квест $questId завершен")
                 EventBus.post(GameEvent.QuestCompleted("quest_ended"))
                 questStarted = false
