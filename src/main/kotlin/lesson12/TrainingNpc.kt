@@ -29,13 +29,15 @@ class TrainingNpc(val name: String, var state: NpcState = NpcState.IDLE) {
     }
 
     fun onDialogueChoiceSelected(playerId: String, choiceId: String) {
+        val oldState = state
         if (state == NpcState.TALKING && choiceId == "accept") {
             println("$name: Хорош, учить тебя не буду, держи награду за решимость")
             state = NpcState.REWARDED
             println("[INFO] Теперь $name в состоянии REWARDED")
+            EventBus.post(GameEvent.NpcStateChanged(playerId, name, oldState, state))
+            println("[INFO] NPC поменял состояние с $oldState на $state")
         }
         if (state == NpcState.TALKING && choiceId == "deny") {
-            val oldState = state
             println("$name: Я все равно не буду тебя учить + я angry")
             state = NpcState.ANGRY
             println("[INFO] Теперь $name в состоянии ANGRY")
