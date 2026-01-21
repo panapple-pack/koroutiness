@@ -1,5 +1,8 @@
 package lesson11
 
+import lesson12.NpcState
+import lesson12.TrainingNpc
+
 sealed class GameEvent {
     // Боевые события //
     data class CharacterDied(
@@ -45,6 +48,13 @@ sealed class GameEvent {
         val playerId: String,
         val npcName: String,
         val lineId: String
+    ) : GameEvent()
+
+    data class NpcStateChanged(
+        val playerId: String,
+        val npcName: String,
+        val oldState: NpcState,
+        val newState: NpcState
     ) : GameEvent()
 
     // Квесты и прогресс
