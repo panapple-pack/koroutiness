@@ -1,89 +1,88 @@
 package lesson11
 
 import lesson12.NpcState
-import lesson12.TrainingNpc
 
-sealed class GameEvent {
+sealed class GameEvent(open val playerId: String) {
     // Боевые события //
     data class CharacterDied(
-        val playerId: String,
+        override val playerId: String,
         val characterName: String,
         val killerName: String
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     data class DamageDealt(
-        val playerId: String,
+        override val playerId: String,
         val attackerName: String,
         val targetName: String,
         val amount: Int
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     data class EffectApply(
-        val playerId: String,
+        override val playerId: String,
         val characterName: String,
         val effectName: String
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     data class EffectEnded(
-        val playerId: String,
+        override val playerId: String,
         val characterName: String,
         val effectName: String
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     // ДИАЛОГИ И NPC //
     data class DialogueStarted(
-        val playerId: String,
+        override val playerId: String,
         val npcName: String,
         val playerName: String
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     data class DialogueChoiceSelected(
-        val playerId: String,
+        override val playerId: String,
         val npcName: String,
         val playerName: String,
         val choiceId: String
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     data class DialogueLineUnlocked(
-        val playerId: String,
+        override val playerId: String,
         val npcName: String,
         val lineId: String
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     data class NpcStateChanged(
-        val playerId: String,
+        override val playerId: String,
         val npcName: String,
         val oldState: NpcState,
         val newState: NpcState
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     // Квесты и прогресс
 
     data class QuestStarted(
-        val playerId: String,
+        override val playerId: String,
         val questId: String
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     data class QuestStepCompleted(
-        val playerId: String,
+        override val playerId: String,
         val questId: String,
         val stepId: String
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     data class QuestCompleted(
-        val playerId: String,
+        override val playerId: String,
         val questId: String
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     // Достижения
     data class AchievementsUnlocked(
-        val playerId: String,
+        override val playerId: String,
         val achievementId: String
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 
     data class PlayerProgressSaved(
-        val playerId: String,
+        override val playerId: String,
         val questId: String,
         val stepId: String
-    ) : GameEvent()
+    ) : GameEvent(playerId)
 }

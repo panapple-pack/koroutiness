@@ -1,6 +1,6 @@
 package lesson13
 
-import lesson10.GameEvent
+import lesson11.GameEvent
 
 // Ноды - это как станции с пересадками на разные переходы состояний
 
